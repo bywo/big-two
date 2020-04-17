@@ -1,13 +1,15 @@
 import { useDispatch } from "react-redux";
-import { Card, deal, useSelector, place, pass } from "data/store";
+import { deal, useSelector, place, pass } from "data/store";
 import last from "lodash/last";
 import { useState } from "react";
 import produce from "immer";
+import { Card, isValidPlay } from "util/cards";
 
 export default function Main() {
   const state = useSelector((state) => state);
   const dispatch = useDispatch();
   const latestRound = last(state.rounds);
+  const lastCombo = latestRound && last(latestRound);
   return (
     <div>
       <div>
@@ -20,19 +22,34 @@ export default function Main() {
               style={{ flex: 1 }}
               hand={state.hands[0]}
               isCurrentTurn={state.currentPlayer === 0}
-              onPlace={(combo) => dispatch(place(0, combo))}
+              onPlace={(combo) => {
+                if (isValidPlay(lastCombo, combo)) {
+                  dispatch(place(0, combo));
+                } else {
+                  alert("invalid play");
+                }
+              }}
               onPass={() => dispatch(pass(0))}
             />
           )}
           <div style={{ flex: 1 }}>
-            Latest play: {latestRound && last(latestRound)}
+            Latest play:{" "}
+            {lastCombo?.map((c) => (
+              <CardView card={c} />
+            ))}
           </div>
           {state.hands[1] && (
             <Hand
               style={{ flex: 1 }}
               hand={state.hands[1]}
               isCurrentTurn={state.currentPlayer === 1}
-              onPlace={(combo) => dispatch(place(1, combo))}
+              onPlace={(combo) => {
+                if (isValidPlay(lastCombo, combo)) {
+                  dispatch(place(1, combo));
+                } else {
+                  alert("invalid play");
+                }
+              }}
               onPass={() => dispatch(pass(1))}
             />
           )}
@@ -78,7 +95,7 @@ function Hand({
             }
           }}
         >
-          {card}
+          <CardView card={card} />
         </div>
       ))}
       {isCurrentTurn ? (
@@ -96,4 +113,17 @@ function Hand({
       ) : null}
     </div>
   );
+}
+
+const emojiMapping: { [k: string]: string } = {
+  c: "♣️",
+  d: "♦️",
+  h: "♥️",
+  s: "♠️",
+};
+
+function CardView({ card }: { card: string }) {
+  const suit = card[0];
+  const rank = card.slice(1);
+  return <span>{`${emojiMapping[suit]}${rank}`}</span>;
 }

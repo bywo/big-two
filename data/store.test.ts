@@ -1,6 +1,8 @@
 import { createStore } from "redux";
-import { reducer, deal, standardDeck, place, pass } from "./store";
+import { reducer, deal, place, pass } from "./store";
 import _ from "lodash";
+import { standardDeck } from "util/cards";
+
 describe("big two gameplay", () => {
   let store = createStore(reducer);
   beforeEach(() => {

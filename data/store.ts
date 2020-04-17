@@ -1,23 +1,16 @@
 import { produce } from "immer";
 import { Reducer } from "redux";
-
-import last from "lodash/last";
-import flatMap from "lodash/flatMap";
-import shuffle from "lodash/shuffle";
-import range from "lodash/range";
-import without from "lodash/without";
 import {
   TypedUseSelectorHook,
   useSelector as originalUseSelector,
 } from "react-redux";
 
-export type Card = string;
-export const standardDeck: Card[] = flatMap(["♣️", "♦️", "♥️", "♠️"], (suit) =>
-  flatMap(
-    ["3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A", "2"],
-    (rank) => `${suit}${rank}`
-  )
-);
+import last from "lodash/last";
+import shuffle from "lodash/shuffle";
+import range from "lodash/range";
+import without from "lodash/without";
+
+import { Card, standardDeck } from "util/cards";
 
 interface State {
   numPlayers: number;
