@@ -4,6 +4,7 @@ import last from "lodash/last";
 import { useState } from "react";
 import produce from "immer";
 import { Card, isValidPlay } from "util/cards";
+import CardView from "./CardView";
 
 export default function Main() {
   const state = useSelector((state) => state);
@@ -113,17 +114,4 @@ function Hand({
       ) : null}
     </div>
   );
-}
-
-const emojiMapping: { [k: string]: string } = {
-  c: "♣️",
-  d: "♦️",
-  h: "♥️",
-  s: "♠️",
-};
-
-function CardView({ card }: { card: string }) {
-  const suit = card[0];
-  const rank = card.slice(1);
-  return <span>{`${emojiMapping[suit]}${rank}`}</span>;
 }
