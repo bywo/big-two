@@ -6,6 +6,7 @@
   "author": "Byron",
   "license": "MIT",
   "dependencies": {
+    "buffer": "^5.6.0",
     "deck": "^0.0.4",
     "hyperlog": "^4.12.1",
     "immer": "^6.0.3",
@@ -15,11 +16,13 @@
     "lodash": "^4.17.15",
     "next": "^9.3.5",
     "orbit-db": "^0.23.1",
+    "pump": "^3.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-redux": "^7.2.0",
     "redux": "^4.0.5",
     "signalhub": "^4.9.0",
+    "through2": "^3.0.1",
     "webrtc-swarm": "https://github.com/corwin-of-amber/webrtc-swarm#8f5ff10"
   },
   "devDependencies": {
@@ -32,9 +35,12 @@
     "@types/react": "^16.9.34",
     "@types/react-dom": "^16.9.6",
     "@types/react-redux": "^7.1.7",
+    "brfs": "^2.0.2",
     "jest": "^25.3.0",
     "jest-electron": "^0.1.11",
+    "next-transpile-modules": "^3.2.0",
     "now": "^18.0.0",
+    "transform-loader": "^0.2.4",
     "ts-jest": "^25.3.1",
     "typescript": "^3.8.3"
   }

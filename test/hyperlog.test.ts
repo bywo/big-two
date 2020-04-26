@@ -5,6 +5,7 @@ import { promisify } from "util";
 describe("hyperlog", () => {
   const dbA = level("dbA");
   const dbB = level("dbB");
+  const dbC = level("dbC");
   beforeEach(async () => {
     // const it = level("dbA").iterator();
     // it.next((node: any) => {
@@ -14,6 +15,7 @@ describe("hyperlog", () => {
     try {
       await dbA.clear();
       await dbB.clear();
+      await dbC.clear();
     } catch (e) {
       console.log("clear err", e);
     }
@@ -41,16 +43,35 @@ describe("hyperlog", () => {
     heads = await logBHeads();
     console.log("b heads", heads);
 
-    const sA = logA.replicate();
-    const sB = logB.replicate();
+    const sA = logA.replicate({ live: true });
+    const sB = logB.replicate({ live: true });
 
     sA.pipe(sB).pipe(sA);
+
+    const logC = hyperlog(dbC);
+    logC.createReadStream({ live: true }).on("data", (node: any) => {
+      console.log("logC stream", node);
+    });
+    const logCAppend = promisify(logC.append.bind(logC));
+    const logCHeads = promisify(logC.heads.bind(logC));
+
+    const sA2 = logA.replicate({ live: true });
+    const sC = logC.replicate({ live: true });
+    sA2.pipe(sC).pipe(sA2);
 
     await new Promise((resolve) => {
       setTimeout(resolve, 1000);
     });
 
     console.log("a heads", await logAHeads());
+    console.log("b heads", await logBHeads());
+    console.log("c heads", await logCHeads());
+
+    await logAAppend("a2");
+    console.log("a heads", await logAHeads());
+    await new Promise((resolve) => {
+      setTimeout(resolve, 1000);
+    });
     console.log("b heads", await logBHeads());
   });
 });
