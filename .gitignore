@@ -1,4 +1,8 @@
 node_modules
 .next
-
 .now
+dbA
+dbB
+dbC
+user
+yarn-error.log

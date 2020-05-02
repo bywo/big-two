@@ -13,30 +13,38 @@ import without from "lodash/without";
 import { Card, standardDeck } from "util/cards";
 
 interface State {
-  numPlayers: number;
   currentPlayer: number;
   lastPlayerToPlayACombo: number | undefined;
   rounds: Card[][][];
 
   hands: Card[][];
+
+  usernames: { [browserId: string]: string };
+  playerOrder: string[];
 }
 
 interface DealAction {
   type: "deal";
   payload: {
+    playerOrder: string[];
     hands: Card[][];
   };
 }
-export function deal(numPlayers: number): DealAction {
+export function deal(playerOrder: string[]): DealAction {
+  const numPlayers = playerOrder.length;
   const shuffled = shuffle(standardDeck);
   const hands: Card[][] = range(numPlayers).map(() => []);
   for (let i = 0; i < shuffled.length; i++) {
-    hands[i % numPlayers].push(shuffled[i]);
+    const hand = hands[i % numPlayers];
+    if (hand.length < 13) {
+      hand.push(shuffled[i]);
+    }
   }
 
   return {
     type: "deal",
     payload: {
+      playerOrder,
       hands,
     },
   };
@@ -76,21 +84,34 @@ export function pass(player: number): PassAction {
   };
 }
 
+interface ClaimUsernameAction {
+  type: "claimUsername";
+  payload: {
+    browserId: string;
+    username: string;
+  };
+}
+
 const initialState: State = {
-  numPlayers: 0,
   currentPlayer: 0,
   lastPlayerToPlayACombo: undefined,
   rounds: [],
   hands: [],
+  usernames: {},
+  playerOrder: [],
 };
 
-type Action = DealAction | PlaceAction | PassAction;
+export type Action =
+  | DealAction
+  | PlaceAction
+  | PassAction
+  | ClaimUsernameAction;
 
 export const reducer: Reducer<State, Action> = produce(
   (state: State, action: Action) => {
     if (action.type === "deal") {
+      state.playerOrder = action.payload.playerOrder;
       state.hands = action.payload.hands;
-      state.numPlayers = state.hands.length;
       state.currentPlayer = 0;
       state.rounds = [[]];
     } else if (action.type === "place") {
@@ -98,7 +119,8 @@ export const reducer: Reducer<State, Action> = produce(
         state.hands[state.currentPlayer],
         ...action.payload.combo
       );
-      state.currentPlayer = (action.payload.player + 1) % state.numPlayers;
+      state.currentPlayer =
+        (action.payload.player + 1) % state.playerOrder.length;
       state.lastPlayerToPlayACombo = action.payload.player;
 
       let latestRound = last(state.rounds);
@@ -108,10 +130,15 @@ export const reducer: Reducer<State, Action> = produce(
       }
       latestRound.push(action.payload.combo);
     } else if (action.type === "pass") {
-      state.currentPlayer = (action.payload.player + 1) % state.numPlayers;
+      state.currentPlayer =
+        (action.payload.player + 1) % state.playerOrder.length;
       if (state.currentPlayer === state.lastPlayerToPlayACombo) {
         // everyone passed. new round!
         state.rounds.push([]);
+      }
+    } else if (action.type === "claimUsername") {
+      if (!Object.values(state.usernames).includes(action.payload.username)) {
+        state.usernames[action.payload.browserId] = action.payload.username;
       }
     }
   },

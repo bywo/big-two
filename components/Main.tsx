@@ -1,59 +1,82 @@
 import { useDispatch } from "react-redux";
-import { deal, useSelector, place, pass } from "data/store";
+import { Action, deal, useSelector, place, pass } from "data/store";
 import last from "lodash/last";
 import { useState } from "react";
 import produce from "immer";
-import { Card, isValidPlay } from "util/cards";
+import { Card, isValidPlay, toValue } from "util/cards";
 import CardView from "./CardView";
+import { Dispatch } from "redux";
+import sortBy from "lodash/sortBy";
 
-export default function Main() {
+export default function Main({ browserId }: { browserId: string }) {
   const state = useSelector((state) => state);
-  const dispatch = useDispatch();
+  const dispatch: Dispatch<Action> = useDispatch();
   const latestRound = last(state.rounds);
   const lastCombo = latestRound && last(latestRound);
+
+  const [usernameInputValue, setUsernameInputValue] = useState("");
+
+  const username = state.usernames[browserId];
   return (
     <div>
+      {!username ? (
+        <div>
+          What's your name?{" "}
+          <input
+            type="text"
+            value={usernameInputValue}
+            onChange={(e) => setUsernameInputValue(e.target.value)}
+          />
+          <button
+            onClick={() => {
+              dispatch({
+                type: "claimUsername",
+                payload: { browserId, username: usernameInputValue },
+              });
+            }}
+          >
+            Save
+          </button>
+        </div>
+      ) : (
+        <div>Username: {username}</div>
+      )}
+      <div>People in room: {Object.values(state.usernames).join(", ")}</div>
+      <div>Players: {state.playerOrder.join(", ")}</div>
       <div>
         {!state.hands.length && (
-          <button onClick={() => dispatch(deal(2))}>Deal</button>
+          <button
+            onClick={() => dispatch(deal(Object.values(state.usernames)))}
+          >
+            Deal
+          </button>
         )}
-        <div style={{ display: "flex" }}>
-          {state.hands[0] && (
+        {state.hands.map((hand, i) => {
+          const playerName = state.playerOrder[i];
+          const isMe = username === playerName;
+
+          return (
             <Hand
               style={{ flex: 1 }}
-              hand={state.hands[0]}
-              isCurrentTurn={state.currentPlayer === 0}
+              isMe={isMe}
+              hand={hand}
+              isCurrentTurn={state.currentPlayer === i}
               onPlace={(combo) => {
                 if (isValidPlay(lastCombo, combo)) {
-                  dispatch(place(0, combo));
+                  dispatch(place(i, combo));
                 } else {
                   alert("invalid play");
                 }
               }}
-              onPass={() => dispatch(pass(0))}
+              onPass={() => dispatch(pass(i))}
             />
-          )}
-          <div style={{ flex: 1 }}>
-            Latest play:{" "}
-            {lastCombo?.map((c) => (
-              <CardView card={c} />
-            ))}
-          </div>
-          {state.hands[1] && (
-            <Hand
-              style={{ flex: 1 }}
-              hand={state.hands[1]}
-              isCurrentTurn={state.currentPlayer === 1}
-              onPlace={(combo) => {
-                if (isValidPlay(lastCombo, combo)) {
-                  dispatch(place(1, combo));
-                } else {
-                  alert("invalid play");
-                }
-              }}
-              onPass={() => dispatch(pass(1))}
-            />
-          )}
+          );
+        })}
+        <div style={{ flex: 1 }}>
+          Latest play:{" "}
+          {lastCombo?.map((c) => (
+            <CardView card={c} selected={false} />
+          ))}
         </div>
       </div>
     </div>
@@ -66,21 +89,28 @@ function Hand({
   isCurrentTurn,
   onPlace,
   onPass,
+  isMe,
 }: {
   hand: Card[];
   isCurrentTurn: boolean;
   style: React.CSSProperties;
   onPlace: (combo: Card[]) => void;
   onPass: () => void;
+  isMe: boolean;
 }) {
   const [selectedCards, setSelectedCards] = useState<{ [k: string]: true }>({});
+  const sortedHand = sortBy(hand, toValue);
   return (
     <div
       style={{ background: isCurrentTurn ? "yellow" : "transparent", ...style }}
     >
-      {hand.map((card) => (
+      {sortedHand.map((card) => (
         <div
-          style={{ background: selectedCards[card] ? "green" : "transparent" }}
+          key={card}
+          style={{
+            display: "inline-block",
+            background: selectedCards[card] ? "green" : "transparent",
+          }}
           onClick={() => {
             if (selectedCards[card]) {
               setSelectedCards(
@@ -96,10 +126,13 @@ function Hand({
             }
           }}
         >
-          <CardView card={card} />
+          <CardView
+            card={isMe ? card : "unknown"}
+            selected={selectedCards[card]}
+          />
         </div>
       ))}
-      {isCurrentTurn ? (
+      {isCurrentTurn && isMe ? (
         <div>
           <button
             onClick={() => {
