@@ -1,16 +1,22 @@
 import * as _ from "lodash";
 
+declare global {
+  interface Error {
+    missingKey?: string;
+  }
+}
+
 interface Node {
   key: string;
   links: string[];
 }
 
 // Kahn's algorithm with lexographic tiebreakers on `key`
-export default async function topologicalSort(
-  nodes: { [key: string]: Node },
+export default async function topologicalSort<N extends Node>(
+  nodes: { [key: string]: N },
   heads: string[]
-): Promise<Node[]> {
-  const ret: Node[] = [];
+): Promise<N[]> {
+  const ret: N[] = [];
   const edgesYetToBeTraversed: {
     [key: string]: { [key: string]: boolean };
   } = {};
@@ -26,6 +32,11 @@ export default async function topologicalSort(
     const tip = _.max(currentHeads) as string;
     currentHeads = _.without(currentHeads, tip);
     const node = nodes[tip];
+    if (!node) {
+      const e = new Error(`Couldn't find node with key ${tip}`);
+      e.missingKey = tip;
+      throw e;
+    }
     ret.push(node);
 
     for (const link of node.links) {

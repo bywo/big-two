@@ -2,15 +2,10 @@ import * as _ from "lodash";
 import topologicalSort from "./topologicalSort";
 const level = require("level");
 const hyperlog = require("hyperlog");
-import { promisify } from "util";
+import promisifyAll from "../util/promisifyAll";
 
 function getPromisifiedHyperlog(...args: any[]) {
-  const log = hyperlog(...args);
-  for (const key in log) {
-    if (typeof log[key] === "function") {
-      log[key + "Async"] = promisify(log[key].bind(log));
-    }
-  }
+  const log = promisifyAll(hyperlog(...args));
 
   // subscribe to all node additions
   log.allNodes = [];
