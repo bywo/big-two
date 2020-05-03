@@ -9734,9 +9734,9 @@ webpack@4.42.1:
     watchpack "^1.6.0"
     webpack-sources "^1.4.1"
 
-"webrtc-swarm@https://github.com/corwin-of-amber/webrtc-swarm#8f5ff10":
+"webrtc-swarm@https://github.com/bywo/webrtc-swarm#5789a7d":
   version "2.9.0"
-  resolved "https://github.com/corwin-of-amber/webrtc-swarm#8f5ff1029fc874011faf22e9c7f1e81e808a58c2"
+  resolved "https://github.com/bywo/webrtc-swarm#5789a7df235e9f136e12bd3a8296af56e794a563"
   dependencies:
     cuid "^2.1.6"
     debug "^4.1.1"

@@ -22,7 +22,7 @@
     "signalhub": "^4.9.0",
     "through2": "^3.0.1",
     "uuid": "^7.0.3",
-    "webrtc-swarm": "https://github.com/corwin-of-amber/webrtc-swarm#8f5ff10"
+    "webrtc-swarm": "https://github.com/bywo/webrtc-swarm#5789a7d"
   },
   "devDependencies": {
     "@jest-runner/electron": "^2.0.3",
