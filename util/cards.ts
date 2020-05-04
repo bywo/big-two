@@ -94,7 +94,7 @@ export function toValue(cardOrPokerHand: Card | Card[]): number {
 }
 
 export function isStraight(cards: Card[]) {
-  const sorted = cards.map((card) => (toValue(card) / 10) | 0).sort();
+  const sorted = sortBy(cards.map((card) => (toValue(card) / 10) | 0));
   for (let i = 0; i < sorted.length; i++) {
     if (sorted[i] !== sorted[0] + i) {
       return false;
