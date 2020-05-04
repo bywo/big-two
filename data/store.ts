@@ -9,8 +9,9 @@ import last from "lodash/last";
 import shuffle from "lodash/shuffle";
 import range from "lodash/range";
 import without from "lodash/without";
+import minBy from "lodash/minBy";
 
-import { Card, standardDeck } from "util/cards";
+import { Card, standardDeck, toValue } from "util/cards";
 
 interface State {
   currentPlayer: number;
@@ -112,7 +113,11 @@ export const reducer: Reducer<State, Action> = produce(
     if (action.type === "deal") {
       state.playerOrder = action.payload.playerOrder;
       state.hands = action.payload.hands;
-      state.currentPlayer = 0;
+      const lowestHand = minBy(state.hands, (hand) =>
+        toValue(minBy(hand, (card) => toValue(card)) as Card)
+      ) as Card[];
+      const initialPlayerIndex = state.hands.indexOf(lowestHand);
+      state.currentPlayer = initialPlayerIndex;
       state.rounds = [[]];
     } else if (action.type === "place") {
       state.hands[state.currentPlayer] = without(

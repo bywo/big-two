@@ -16,10 +16,10 @@ const iconMapping: { [k: string]: string } = {
 
 export default function CardView({
   card,
-  selected,
+  selected = false,
 }: {
   card: string;
-  selected: boolean;
+  selected?: boolean;
 }) {
   const suit = card[0];
   const rank = card.slice(1);
@@ -38,7 +38,7 @@ export default function CardView({
         height: 100,
         border: "solid 1px #ccc",
         borderRadius: 8,
-        background: card === "unknown" ? "gray" : selected ? "#ccc" : "white",
+        background: card === "unknown" ? "gray" : selected ? "#eee" : "white",
         fontFamily: "Fredoka One",
         color: suit === "h" || suit === "d" ? "#ff6464" : "#515262",
         fontSize: "24px",
