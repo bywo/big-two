@@ -29,6 +29,7 @@ interface ParsedNode extends HyperlogNode {
 }
 
 export function init<S, A extends Action>(
+  peerId: string,
   roomId: string,
   reducer: Reducer<S, A>
 ) {
@@ -107,7 +108,9 @@ export function init<S, A extends Action>(
   });
   window.log = log;
 
-  var sw = swarm(hub);
+  var sw = swarm(hub, {
+    uuid: peerId,
+  });
 
   sw.on("peer", function(peer: any, id: string) {
     console.log("connected to a new peer:", id);
@@ -137,7 +140,13 @@ export function init<S, A extends Action>(
     log.append(JSON.stringify(action));
   }) as any;
 
-  return store;
+  return {
+    store,
+    cleanup: () => {
+      console.log("cleanup, calling swarm.close()");
+      sw.close();
+    },
+  };
 }
 
 function toBuffer() {

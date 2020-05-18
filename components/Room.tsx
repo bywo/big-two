@@ -41,19 +41,20 @@ export default function Room({ roomId }: { roomId: string }) {
   useEffect(() => {
     if (!browserId) return;
 
-    const store = init(roomId, reducer);
+    const { store, cleanup } = init(browserId, roomId, reducer);
     setStore(store);
+
+    window.addEventListener("beforeunload", cleanup);
+
+    return () => {
+      window.removeEventListener("beforeunload", cleanup);
+      cleanup();
+    };
   }, [browserId, roomId]);
 
-  return (
-    <div>
-      <div>Room: {roomId}</div>
-      <div>My id: {browserId}</div>
-      {browserId && store && (
-        <Provider store={store}>
-          <Main browserId={browserId} />
-        </Provider>
-      )}
-    </div>
-  );
+  return browserId && store ? (
+    <Provider store={store}>
+      <Main browserId={browserId} />
+    </Provider>
+  ) : null;
 }

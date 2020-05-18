@@ -1,4 +1,5 @@
 import Head from "next/head";
+import { darkGray } from "components/shared";
 
 export default function MyApp({
   Component,
@@ -19,6 +20,11 @@ export default function MyApp({
       <style global jsx>
         {`
           body {
+            padding: 0;
+            margin: 0;
+            font-family: "Fredoka One";
+            background-color: #fff3e3;
+            color: ${darkGray};
           }
 
           * {

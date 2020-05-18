@@ -6,6 +6,7 @@
   "author": "Byron",
   "license": "MIT",
   "dependencies": {
+    "@zeit/next-css": "^1.0.1",
     "buffer": "^5.6.0",
     "deck": "^0.0.4",
     "es6-promisify": "^6.1.0",
@@ -14,6 +15,7 @@
     "level": "^6.0.1",
     "lodash": "^4.17.15",
     "next": "^9.3.5",
+    "next-compose-plugins": "^2.2.0",
     "pump": "^3.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
