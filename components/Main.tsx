@@ -5,6 +5,7 @@ import { useState, ButtonHTMLAttributes } from "react";
 import produce from "immer";
 import { Card, isValidPlay, toValue } from "util/cards";
 import CardView from "./CardView";
+import Button from "./Button";
 import { Dispatch } from "redux";
 import sortBy from "lodash/sortBy";
 import range from "lodash/range";
@@ -200,29 +201,5 @@ function Hand({
         </div>
       ) : null}
     </div>
-  );
-}
-
-function Button(
-  props: ButtonHTMLAttributes<HTMLButtonElement> & {
-    buttonType?: "main" | "secondary";
-  }
-) {
-  const { buttonType = "main" } = props;
-  return (
-    <button
-      {...props}
-      style={{
-        fontFamily: "Fredoka One",
-        fontSize: "24px",
-        padding: "12px 18px",
-        outline: "none",
-        border: "none",
-        borderRadius: 6,
-        color: "white",
-        background: buttonType === "secondary" ? "#ff6464" : "#515262",
-        ...props.style,
-      }}
-    />
   );
 }

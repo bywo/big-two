@@ -19,6 +19,8 @@ export default function MyApp({
       <style global jsx>
         {`
           body {
+            font-family: "Fredoka One";
+            background-color: #fff3e3;
           }
 
           * {
