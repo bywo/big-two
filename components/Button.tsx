@@ -1,4 +1,5 @@
 import { button, darkGray, primary } from "./shared";
+import { ButtonHTMLAttributes } from "react";
 
 export default function Button(
   props: ButtonHTMLAttributes<HTMLButtonElement> & {
