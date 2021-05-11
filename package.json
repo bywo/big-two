@@ -13,7 +13,7 @@
     "hyperlog": "^4.12.1",
     "immer": "^6.0.3",
     "level": "^6.0.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "next": "^9.3.5",
     "next-compose-plugins": "^2.2.0",
     "pump": "^3.0.0",
